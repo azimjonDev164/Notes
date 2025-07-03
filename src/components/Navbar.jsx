@@ -5,11 +5,11 @@ const Navbar = () => {
         <a className="text-2xl cursor-pointer">✍️Notes</a>
       </div>
       <div className="flex gap-2">
-        <input
+        {/* <input
           type="text"
           placeholder="Search"
           className="input input-bordered text-black w-24 md:w-auto"
-        />
+        /> */}
         <div className="dropdown dropdown-end text-black">
           <div
             tabIndex={0}
