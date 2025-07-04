@@ -1,6 +1,6 @@
 const Navbar = () => {
   return (
-    <div className="navbar fixed top-0 right-0 left-0 bg-gray-900 text-white shadow-sm">
+    <div className="navbar fixed top-0 right-0 left-0 bg-gray-900 text-white shadow-sm h-[70px] z-10">
       <div className="flex-1">
         <a className="text-2xl cursor-pointer">✍️Notes</a>
       </div>
@@ -25,7 +25,7 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            className="menu menu-sm dropdown-content bg-gray-800 text-white rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
               <a className="justify-between">

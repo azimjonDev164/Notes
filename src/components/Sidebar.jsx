@@ -1,8 +1,8 @@
 const Sidebar = () => {
   return (
-    <div className="fixed left-0 bottom-0 top-[64px] w-[300px] bg-gray-900 text-white">
-      <div className="mt-2 mr-1 flex">
-        <label className="input bg-gray-900 border-white">
+    <div className="resize-x overflow-auto bg-gray-900 text-white w-64 min-w-[12rem] max-w-[80vw] mt-0">
+      <div className="mt-2mr-1 flex">
+        <label className="input bg-gray-900 border-white w-full">
           <svg
             className="h-[1em] opacity-50"
             xmlns="http://www.w3.org/2000/svg"

@@ -1,18 +1,19 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
-import "../App.css";
 import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 
-const Layuot = () => {
+const Layout = () => {
   return (
-    <>
+    <div className="flex flex-col">
       <Navbar />
-      <Sidebar />
-      <div className="App">
-        <Outlet />
+      <div className="flex flex-row h-[calc(100vh-70px)]">
+        <Sidebar />
+        <div className="App flex-1 overflow-auto">
+          <Outlet />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Layuot;
+export default Layout;
