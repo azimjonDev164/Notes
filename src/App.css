@@ -1,24 +1,36 @@
-.App {
-      max-width: 1280px;
-      padding: 0 auto;
-      font-size: 1.5rem;
-}
+ :root {
+       --background-color: white;
+       --text-color: black;
+       /* ... other light theme variables */
+ }
 
-body {
-      min-height: 100vh;
-      padding-top: 70px;
-      background-color: rgb(48, 47, 47);
-      color: white;
-}
+ [data-theme='dark'] {
+       --background-color: rgb(48, 47, 47);
+       --text-color: white;
+       /* ... other dark theme variables */
+ }
 
-.hide-scrollbar::-webkit-scrollbar {
-      display: none;
-}
+ .App {
+       max-width: 1280px;
+       margin: 0 auto;
+       font-size: 1.5rem;
+ }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.hide-scrollbar {
-      -ms-overflow-style: none;
-      /* IE and Edge */
-      scrollbar-width: none;
-      /* Firefox */
-}
+ body {
+       min-height: 100vh;
+       padding-top: 70px;
+       background-color: rgb(48, 47, 47);
+       color: white;
+ }
+
+ .hide-scrollbar::-webkit-scrollbar {
+       display: none;
+ }
+
+ /* Hide scrollbar for IE, Edge and Firefox */
+ .hide-scrollbar {
+       -ms-overflow-style: none;
+       /* IE and Edge */
+       scrollbar-width: none;
+       /* Firefox */
+ }

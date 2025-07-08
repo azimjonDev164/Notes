@@ -8,7 +8,7 @@ const Layout = () => {
       <Navbar />
       <div className="flex flex-row h-[calc(100vh-70px)]">
         <Sidebar />
-        <div className="App flex-1 overflow-auto">
+        <div className="App hide-scrollbar flex-1 overflow-auto">
           <Outlet />
         </div>
       </div>

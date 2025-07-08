@@ -1,4 +1,4 @@
-import { faUpload, faFileCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faFileCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRef, useState } from "react";
 
@@ -11,31 +11,17 @@ const AddFolderItems = ({ title }) => {
   };
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 bg-gray-900 p-4 z-50">
-      <div className="flex items-center max-w-[860px] mx-auto">
-        {title !== "folder" && (
-          <div>
-            <FontAwesomeIcon
-              icon={faUpload}
-              onClick={handler}
-              className="cursor-pointer text-white text-xl"
-            />
-            <input
-              ref={fileRef}
-              type="file"
-              className="hidden"
-              onChange={(e) => setFile(e.target.value)}
-            />
-          </div>
-        )}
+    <div className="sticky bottom-0 left-0 right-0 bg-gray-900 px-4 py-3 border-t border-gray-700 z-50">
+      <div className="flex items-center max-w-[860px] mx-auto gap-3">
         <input
           type="text"
-          placeholder="Add"
-          className="flex-1 ml-4 min-w-0 outline-none text-[17px] bg-gray-800 text-white rounded px-3 py-1"
+          placeholder="Title..."
+          className="flex-1 min-w-0 bg-gray-800 text-white text-[16px] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
         />
+
         <FontAwesomeIcon
           icon={faFileCirclePlus}
-          className="text-yellow-400 cursor-pointer text-xl ml-3"
+          className="text-yellow-400 text-2xl cursor-pointer hover:text-yellow-300 transition-colors duration-200"
         />
       </div>
     </div>
