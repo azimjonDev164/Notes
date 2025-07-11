@@ -4,6 +4,7 @@ import {
   faFolder,
   faFolderPlus,
   faNotesMedical,
+  faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ import axios from "axios";
 const Sidebar = () => {
   const [addFolder, setAddFolder] = useState(false);
   const [folders, setFolders] = useState([]);
+  const [folderFiles, setFolderFiles] = useState({});
   const [title, setTitle] = useState("");
   const [editFolder, setEditFolder] = useState({ id: null, title: "" });
   const [isLoading, setLoading] = useState(false);
@@ -25,13 +27,11 @@ const Sidebar = () => {
   const addFolderRef = useRef();
   const navigate = useNavigate();
 
-  // get a token
   const getToken = async () => {
     const token = await getAccessTokenSilently();
     return token;
   };
 
-  // focus on form that is adding folder
   const addFolderHandler = () => {
     setAddFolder(true);
     setTimeout(() => {
@@ -39,7 +39,6 @@ const Sidebar = () => {
     }, 100);
   };
 
-  // add a new folder
   const addFolderName = async (e) => {
     e.preventDefault();
     setAddFolder(false);
@@ -49,44 +48,51 @@ const Sidebar = () => {
         `${BASE_URL}/folder`,
         { title },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTitle(""); // ✅ Clear input
+      setTitle("");
       await getFolders();
     } catch (err) {
-      console.error("Create folder failed:", err); // ✅ Debug
+      console.error("Create folder failed:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // get all folders
   const getFolders = async () => {
     const token = await getToken();
-
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/folder`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+      const foldersData = response.data;
+      setFolders(foldersData);
+
+      const filesMap = {};
+      await Promise.all(
+        foldersData.map(async (folder) => {
+          const res = await axios.get(`${BASE_URL}/file?folderId=${folder.id}`);
+          filesMap[folder.id] = res.data;
+        })
+      );
+
+      setFolderFiles(filesMap);
       setSuccess(true);
-      setLoading(false);
-      console.log(response.data);
-      setFolders(response.data);
     } catch (error) {
       setError(true);
-      setLoading(false);
       setSuccess(false);
       setErrorMsg(error?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // adit a folder
+  const refreshHandler = async () => {
+    await getFolders();
+  };
+
   const editFolderHandler = async (id, e) => {
     e.preventDefault();
     const token = await getToken();
@@ -95,30 +101,25 @@ const Sidebar = () => {
         `${BASE_URL}/folder/${id}`,
         { title: editFolder.title },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setEditFolder({ id: null, title: "" });
-      await getFolders(); // refresh list
+      await getFolders();
     } catch (err) {
-      console.error("Create folder failed:", err); // ✅ Debug
+      console.error("Edit folder failed:", err);
     }
   };
 
-  // delete a folder
   const deleteFolder = async (id) => {
     const token = await getToken();
     try {
       await axios.delete(`${BASE_URL}/folder/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       await getFolders();
     } catch (err) {
-      console.error("Create folder failed:", err); // ✅ Debug
+      console.error("Delete folder failed:", err);
     }
   };
 
@@ -127,7 +128,6 @@ const Sidebar = () => {
   }, []);
 
   let content;
-
   if (isLoading) {
     content = (
       <div className="flex w-52 flex-col gap-4">
@@ -175,7 +175,6 @@ const Sidebar = () => {
               </span>
             </div>
 
-            {/* Dropdown for Edit/Delete */}
             <div className="dropdown dropdown-end">
               <button
                 tabIndex={0}
@@ -190,14 +189,14 @@ const Sidebar = () => {
                 <li>
                   <button
                     onClick={() =>
-                      setEditFolder({ id: folder.id, title: folder?.title })
+                      setEditFolder({ id: folder.id, title: folder.title })
                     }
                     className="hover:bg-gray-700 hover:text-yellow-400"
                   >
                     Edit
                   </button>
                 </li>
-                <li onClick={() => deleteFolder(folder?.id)}>
+                <li onClick={() => deleteFolder(folder.id)}>
                   <button className="hover:bg-gray-700 hover:text-red-400">
                     Delete
                   </button>
@@ -206,20 +205,25 @@ const Sidebar = () => {
             </div>
           </summary>
 
-          {/* Folder Submenu */}
           <ul className="mt-3 ml-8 space-y-1">
-            <li>
-              <button
-                className="flex items-center gap-2 text-sm hover:text-yellow-400 transition"
-                onClick={() => navigate(`/folder/file/${folder.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faNotesMedical}
-                  className="text-yellow-400 text-base"
-                />
-                Submenu 1
-              </button>
-            </li>
+            {folderFiles[folder.id]?.length ? (
+              folderFiles[folder.id].map((file) => (
+                <li key={file.id}>
+                  <button
+                    className="flex items-center gap-2 text-sm hover:text-yellow-400 transition"
+                    onClick={() => navigate(`/folder/file/${file.id}`)}
+                  >
+                    <FontAwesomeIcon
+                      icon={faNotesMedical}
+                      className="text-yellow-400 text-base"
+                    />
+                    {file.title}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400 text-sm italic">No files yet</li>
+            )}
           </ul>
         </details>
       </li>
@@ -229,7 +233,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="resize-x overflow-auto bg-gray-900 text-white w-64 min-w-[12rem] max-w-[80vw]  p-4 shadow-lg border-r border-gray-700">
+    <div className="resize-x overflow-auto bg-gray-900 text-white w-64 min-w-[12rem] max-w-[80vw] p-4 shadow-lg border-r border-gray-700">
       {/* Search and Add Folder */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative w-full">
@@ -256,20 +260,24 @@ const Sidebar = () => {
           </svg>
         </div>
 
-        {/* Add Folder Button */}
         <FontAwesomeIcon
           icon={faFolderPlus}
           onClick={addFolderHandler}
           className="text-yellow-400 text-2xl cursor-pointer hover:text-yellow-300 transition"
           title="Add Folder"
         />
+
+        <FontAwesomeIcon
+          icon={faRefresh}
+          onClick={refreshHandler}
+          className="text-yellow-400 text-2xl cursor-pointer hover:text-yellow-300 transition"
+          title="Add Folder"
+        />
       </div>
 
-      {/* Folder Tree */}
       <ul className="menu space-y-2 w-full">
         {content}
 
-        {/* New Folder Input */}
         {addFolder && (
           <li className="mt-2">
             <form

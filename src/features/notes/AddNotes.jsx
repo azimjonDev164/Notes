@@ -1,17 +1,35 @@
-import {
-  faUpload,
-  faFileCirclePlus,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUpload, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import { useRef, useState } from "react";
 
-const AddNote = ({ title }) => {
+const AddNote = ({ fileId, getNotes, clickHandler }) => {
   const [file, setFile] = useState("");
+  const [content, setCotent] = useState("");
+  const BASE_URL = "http://localhost:3000";
+
   const fileRef = useRef(null);
 
   const handler = () => {
     fileRef.current.click();
+  };
+
+  const addNewNote = async () => {
+    try {
+      if (content && fileId) {
+        await axios.post(`${BASE_URL}/notes`, {
+          content,
+          type: "string",
+          completed: false,
+          fileId,
+        });
+        await getNotes();
+        setCotent("");
+        clickHandler();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -34,11 +52,14 @@ const AddNote = ({ title }) => {
         <textarea
           placeholder="Write a note..."
           rows={1}
+          value={content}
+          onChange={(e) => setCotent(e.target.value)}
           className="flex-1 resize-none min-w-0 bg-gray-800 text-white text-[16px] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
         />
 
         <FontAwesomeIcon
           icon={faPlus}
+          onClick={addNewNote}
           className="text-yellow-400 text-2xl cursor-pointer hover:text-yellow-300 transition-colors duration-200"
         />
       </div>

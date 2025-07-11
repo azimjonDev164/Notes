@@ -1,8 +1,14 @@
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faMicrophone,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { speak } from "../../helper/speaker";
 // import party from "party-js";
 import confetti from "canvas-confetti";
+import { useState } from "react";
+import axios from "axios";
 
 const handler = () => {
   speak(`Well done! You completed`);
@@ -13,38 +19,64 @@ const handler = () => {
     scalar: 2,
   });
 };
+const BASE_URL = "http://localhost:3000";
 
-const NoteItem = () => {
+const NoteItem = ({ note, getNotes }) => {
+  const [editNote, setEditNote] = useState({});
+
+  const editNotes = async () => {
+    try {
+    } catch (error) {}
+  };
+
+  const deleteNote = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/notes/${id}`);
+      await getNotes();
+    } catch (err) {
+      console.error("Delete folder failed:", err);
+    }
+  };
+
   return (
-    <div className="card card-side gap-x-4 p-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg transition-transform">
+    <div className="card card-side gap-x-4 p-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg">
       <input
         onClick={handler}
         type="checkbox"
-        defaultChecked
+        defaultChecked={note?.completed}
         className="checkbox checkbox-primary checkbox-lg mt-2"
       />
 
-      <div className="dropdown dropdown-end text-white w-full">
-        <div tabIndex={0} role="button" className="w-full">
-          <p className="text-base leading-relaxed text-gray-200 hover:text-white transition-colors duration-300">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
-            perspiciatis, alias in, dolorem impedit provident atque mollitia
-            quis neque consectetur illum delectus quaerat, rem quidem
-            exercitationem nemo voluptates eaque modi?
-          </p>
+      <div className="flex flex-row items-center w-full text-white">
+        <p
+          className={`text-base flex-1 leading-relaxed text-gray-200 hover:text-white transition-colors duration-300 ${
+            note.completed ? "line-through" : ""
+          }`}
+        >
+          {note?.content}
+        </p>
 
+        <div className="dropdown dropdown-end mt-2">
+          <label tabIndex={0} className="btn btn-warning btn-xs text-white">
+            <FontAwesomeIcon icon={faEdit} /> Options
+          </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 w-48 bg-white text-gray-800 z-50 rounded-md shadow-lg border border-gray-200"
+            className="menu menu-sm dropdown-content mt-2 z-[100] bg-base-100 rounded-box w-52 shadow"
           >
             <li>
-              <a className="flex items-center gap-2 text-[16px] hover:bg-gray-100 px-2 py-1 rounded">
+              <a className="text-gray-700 hover:text-yellow-500">
                 <FontAwesomeIcon icon={faEdit} /> Edit
               </a>
             </li>
-            <li>
-              <a className="flex items-center gap-2 text-[16px] hover:bg-gray-100 px-2 py-1 rounded">
+            <li onClick={() => deleteNote(note?.id)}>
+              <a className="text-gray-700 hover:text-red-500">
                 <FontAwesomeIcon icon={faTrash} /> Delete
+              </a>
+            </li>
+            <li onClick={() => speak(note?.content)}>
+              <a className="text-gray-700 hover:text-green-500">
+                <FontAwesomeIcon icon={faMicrophone} /> speak
               </a>
             </li>
           </ul>
