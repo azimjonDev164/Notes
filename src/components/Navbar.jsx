@@ -2,15 +2,25 @@ import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import Sidebar from "./Sidebar";
 
-const Navbar = () => {
+const Navbar = ({ activeSideBar }) => {
   const { user, isAuthenticated, error } = useAuth0();
   const navigate = useNavigate();
 
   return (
     <div className="navbar fixed top-0 left-0 right-0 bg-gray-900 text-white shadow-md h-[70px] z-50 px-4">
       {/* Logo or App Name */}
-      <div className="flex-1">
+      <div className="block flex-1 md:hidden  ">
+        <FontAwesomeIcon
+          className="hover:text-yellow-400 text-2xl cursor-pointer"
+          onClick={activeSideBar}
+          icon={faBars}
+        />
+      </div>
+      <div className="flex-1 hidden md:block">
         <span
           className="text-2xl font-bold cursor-pointer hover:text-yellow-400 transition"
           onClick={() => navigate("/")}

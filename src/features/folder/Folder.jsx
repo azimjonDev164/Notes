@@ -10,7 +10,7 @@ const Folder = () => {
   const [files, setFiles] = useState([]);
   const [folder, setFolder] = useState([]);
   const { id } = useParams();
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const { getAccessTokenSilently } = useAuth0();
 
   const getToken = async () => {

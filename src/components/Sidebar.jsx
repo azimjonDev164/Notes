@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
-const Sidebar = () => {
+const Sidebar = ({ active }) => {
   const [addFolder, setAddFolder] = useState(false);
   const [folders, setFolders] = useState([]);
   const [folderFiles, setFolderFiles] = useState({});
@@ -21,15 +21,28 @@ const Sidebar = () => {
   const [isSuccess, setSuccess] = useState(false);
   const [isError, setError] = useState(false);
   const [error, setErrorMsg] = useState("");
-  const BASE_URL = "http://localhost:3000";
-  const { getAccessTokenSilently } = useAuth0();
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const addFolderRef = useRef();
   const navigate = useNavigate();
 
   const getToken = async () => {
-    const token = await getAccessTokenSilently();
-    return token;
+    return await getAccessTokenSilently();
+  };
+
+  const getUser = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const res = await fetch("http://localhost:3000/user/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const user = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const addFolderHandler = () => {
@@ -42,6 +55,7 @@ const Sidebar = () => {
   const addFolderName = async (e) => {
     e.preventDefault();
     setAddFolder(false);
+    if (!isAuthenticated) return;
     const token = await getToken();
     try {
       await axios.post(
@@ -61,6 +75,7 @@ const Sidebar = () => {
   };
 
   const getFolders = async () => {
+    if (!isAuthenticated) return;
     const token = await getToken();
     setLoading(true);
     try {
@@ -73,7 +88,12 @@ const Sidebar = () => {
       const filesMap = {};
       await Promise.all(
         foldersData.map(async (folder) => {
-          const res = await axios.get(`${BASE_URL}/file?folderId=${folder.id}`);
+          const res = await axios.get(
+            `${BASE_URL}/file?folderId=${folder.id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           filesMap[folder.id] = res.data;
         })
       );
@@ -84,6 +104,7 @@ const Sidebar = () => {
       setError(true);
       setSuccess(false);
       setErrorMsg(error?.message);
+      console.error("Get folders error:", error);
     } finally {
       setLoading(false);
     }
@@ -124,8 +145,17 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    getFolders();
-  }, []);
+    const init = async () => {
+      const token = await getToken();
+      console.log("Access token:", token);
+      await getFolders();
+    };
+    const init2 = async () => {
+      await getUser(); // ✅ Correct logging
+    };
+    init2();
+    init();
+  }, [isAuthenticated]);
 
   let content;
   if (isLoading) {
@@ -233,7 +263,11 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="resize-x overflow-auto bg-gray-900 text-white w-64 min-w-[12rem] max-w-[80vw] p-4 shadow-lg border-r border-gray-700">
+    <div
+      className={`${
+        active ? "block" : "hidden"
+      } md:block resize-x overflow-auto bg-gray-900 text-white w-64 min-w-[12rem] max-w-[80vw] p-4 shadow-lg border-r border-gray-700`}
+    >
       {/* Search and Add Folder */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative w-full">
@@ -271,7 +305,7 @@ const Sidebar = () => {
           icon={faRefresh}
           onClick={refreshHandler}
           className="text-yellow-400 text-2xl cursor-pointer hover:text-yellow-300 transition"
-          title="Add Folder"
+          title="Refresh"
         />
       </div>
 

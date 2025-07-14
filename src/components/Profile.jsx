@@ -4,30 +4,6 @@ import { useEffect, useState } from "react";
 const Profile = () => {
   // const [user, setUser] = useState({});
   const { user } = useAuth0();
-  // console.log(user);
-
-  // // const { getAccessTokenSilently } = useAuth0();
-
-  // const gethUser = async () => {
-  //   try {
-  //     const token = await getAccessTokenSilently();
-  //     const res = await fetch("http://localhost:3000/user/me", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const user = await res.json();
-  //     console.log(user);
-  //     setUser(user);
-  //     console.log("token", token);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   gethUser();
-  // }, []);
 
   return (
     <div className="p-4">

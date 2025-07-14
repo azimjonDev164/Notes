@@ -6,7 +6,7 @@ import axios from "axios";
 const FolderItem = ({ file, setFiles, folderId }) => {
   const navigate = useNavigate();
   const [editFile, setEditFile] = useState({});
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const getFilesHandler = async () => {
     try {

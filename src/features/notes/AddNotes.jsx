@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 const AddNote = ({ fileId, getNotes, clickHandler }) => {
   const [file, setFile] = useState("");
   const [content, setCotent] = useState("");
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const fileRef = useRef(null);
 
@@ -35,20 +35,6 @@ const AddNote = ({ fileId, getNotes, clickHandler }) => {
   return (
     <div className="sticky bottom-0 left-0 right-0 bg-gray-900 px-4 py-3 border-t border-gray-700 z-50">
       <div className="flex items-center max-w-[860px] mx-auto gap-3">
-        <div className="relative">
-          <FontAwesomeIcon
-            icon={faUpload}
-            onClick={handler}
-            className="cursor-pointer text-yellow-400 text-2xl hover:text-yellow-300 transition-colors duration-200"
-          />
-          <input
-            ref={fileRef}
-            type="file"
-            className="hidden"
-            onChange={(e) => setFile(e.target.value)}
-          />
-        </div>
-
         <textarea
           placeholder="Write a note..."
           rows={1}

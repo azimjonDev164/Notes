@@ -12,7 +12,7 @@ const SinglePage = () => {
   const [notes, setNotes] = useState([]);
   const { getAccessTokenSilently } = useAuth0();
   const { id } = useParams();
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const bottomNotes = useRef(null);
 
   const click = () => {
@@ -62,7 +62,12 @@ const SinglePage = () => {
         <div className="flex flex-col gap-y-4">
           {notes?.length ? (
             notes.map((note) => (
-              <NoteItem key={note.id} note={note} getNotes={getNotes} />
+              <NoteItem
+                key={note.id}
+                note={note}
+                getNotes={getNotes}
+                click={click}
+              />
             ))
           ) : (
             <i>Not Notes yet</i>
