@@ -16,6 +16,7 @@ const Sidebar = ({ active }) => {
   const [folders, setFolders] = useState([]);
   const [folderFiles, setFolderFiles] = useState({});
   const [title, setTitle] = useState("");
+  const [search, setSearch] = useState("");
   const [editFolder, setEditFolder] = useState({ id: null, title: "" });
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
@@ -53,9 +54,9 @@ const Sidebar = ({ active }) => {
   };
 
   const addFolderName = async (e) => {
+    if (!isAuthenticated) return;
     e.preventDefault();
     setAddFolder(false);
-    if (!isAuthenticated) return;
     const token = await getToken();
     try {
       await axios.post(
@@ -74,17 +75,26 @@ const Sidebar = ({ active }) => {
     }
   };
 
-  const getFolders = async () => {
+  const getFolders = async (text = "") => {
     if (!isAuthenticated) return;
-    const token = await getToken();
+
     setLoading(true);
+    setError(false);
+    setSuccess(false);
+
     try {
+      const token = await getToken();
+
+      // Make GET request with optional title query
       const response = await axios.get(`${BASE_URL}/folder`, {
         headers: { Authorization: `Bearer ${token}` },
+        params: text ? { title: text } : {}, // automatically adds ?title= if needed
       });
+
       const foldersData = response.data;
       setFolders(foldersData);
 
+      // Fetch files for each folder
       const filesMap = {};
       await Promise.all(
         foldersData.map(async (folder) => {
@@ -101,10 +111,9 @@ const Sidebar = ({ active }) => {
       setFolderFiles(filesMap);
       setSuccess(true);
     } catch (error) {
-      setError(true);
-      setSuccess(false);
-      setErrorMsg(error?.message);
       console.error("Get folders error:", error);
+      setError(true);
+      setErrorMsg(error?.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
@@ -147,15 +156,25 @@ const Sidebar = ({ active }) => {
   useEffect(() => {
     const init = async () => {
       const token = await getToken();
-      console.log("Access token:", token);
-      await getFolders();
+
+      await getUser(); // ✅ Gets user info
+      await getFolders(); // ✅ Initial folder fetch
     };
-    const init2 = async () => {
-      await getUser(); // ✅ Correct logging
-    };
-    init2();
-    init();
+
+    if (isAuthenticated) {
+      init();
+    }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    const init = async () => {
+      await getFolders(search); // handles search and full list
+    };
+
+    if (isAuthenticated) {
+      init();
+    }
+  }, [search]);
 
   let content;
   if (isLoading) {
@@ -274,6 +293,8 @@ const Sidebar = ({ active }) => {
           <input
             type="search"
             placeholder="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full px-10 py-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400 placeholder:text-gray-400"
           />
           <svg
