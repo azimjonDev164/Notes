@@ -49,7 +49,7 @@ const Folder = () => {
   return (
     <div className="hide-scrollbar h-[84vh]">
       <FolderPath folder={folder} />
-      <div className="margin-auto overflow-y-scroll hide-scrollbar mb-4 h-[73vh] pl-3">
+      <div className="margin-auto overflow-y-scroll hide-scrollbar mb-4 h-[68.5vh] px-3 py-4">
         <div className="flex flex-wrap gap-2">
           {files.length > 0 ? (
             files.map((file) => (
