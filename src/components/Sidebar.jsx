@@ -36,7 +36,7 @@ const Sidebar = ({ active }) => {
   const getUser = async () => {
     try {
       const token = await getAccessTokenSilently();
-      const res = await fetch("http://localhost:3000/user/me", {
+      const res = await fetch(`${BASE_URL}/user/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

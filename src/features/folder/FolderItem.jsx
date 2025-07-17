@@ -68,7 +68,7 @@ const FolderItem = ({ file, setFiles, folderId }) => {
             {file.title}{" "}
           </h2>
         )}
-        <p>13:09:2025</p>
+        <i className="text-gray-400 text-sm">notes app</i>
       </div>
       <div className="dropdown dropdown-end">
         <button
