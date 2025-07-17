@@ -152,6 +152,8 @@ const Sidebar = ({ active }) => {
     } catch (err) {
       console.error("Delete folder failed:", err);
       setErr(err?.response?.data?.message || err.message);
+    } finally {
+      setErr("");
     }
   };
 
